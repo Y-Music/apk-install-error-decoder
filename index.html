@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#08151a">
+  <title>Android APK Install Error Decoder | Safe ADB Troubleshooting</title>
+  <meta name="description" content="Paste an Android ADB install error to identify common causes, choose safe next checks, and avoid deleting app data before understanding the failure.">
+  <link rel="canonical" href="https://apk-install-error-decoder.pages.dev/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Android APK Install Error Decoder">
+  <meta property="og:description" content="A practical, privacy-first decoder for common Android APK installation errors.">
+  <meta property="og:url" content="https://apk-install-error-decoder.pages.dev/">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the decoder</a>
+  <header class="site-header wrap">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">&gt;_</span><span>APK / DIAGNOSTICS</span></div>
+    <span class="header-note">Independent Android troubleshooting reference</span>
+  </header>
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span> A practical guide for a failed install</p>
+        <h1 id="page-title">Understand the error.<br><em>Keep your data.</em></h1>
+        <p class="lead">An APK installation failure is a clue, not a reason to disable security checks or erase the existing app. Paste the error returned by ADB, or choose a code below, to see the most useful next checks.</p>
+        <div class="hero-points" aria-label="Tool principles"><span>No APK uploads</span><span>No account required</span><span>Data-preserving steps first</span></div>
+      </div>
+      <div class="terminal-card" aria-label="Example ADB result">
+        <div class="terminal-bar"><span></span><span></span><span></span><small>INSTALL SESSION</small></div>
+        <div class="terminal-lines"><p><span class="prompt">$</span> adb install app.apk</p><p class="muted">Performing Streamed Install</p><p class="terminal-error">Failure [INSTALL_FAILED_UPDATE_INCOMPATIBLE]</p><p><span class="prompt">↳</span> Check the package and signing certificate before changing the installed app.</p></div>
+      </div>
+    </section>
+
+    <section class="tool-section" aria-labelledby="tool-title">
+      <div class="wrap tool-layout">
+        <div class="tool-intro"><p class="section-kicker">01 / Decode</p><h2 id="tool-title">Paste the exact ADB message</h2><p>The decoder matches known error codes locally in your browser. It does not upload your text or inspect an APK. Remove serial numbers or other private details before sharing an error elsewhere.</p></div>
+        <form id="decoder-form" class="decoder" autocomplete="off">
+          <label for="error-input">ADB output or error code</label>
+          <textarea id="error-input" name="error" rows="4" placeholder="Failure [INSTALL_FAILED_NO_MATCHING_ABIS: Failed to extract native libraries]" maxlength="3000" spellcheck="false"></textarea>
+          <div class="form-actions"><button type="submit" class="button button-primary">Find next checks <span aria-hidden="true">→</span></button><button type="button" id="clear-input" class="button button-quiet">Clear</button></div>
+          <p id="decode-status" class="decode-status" role="status" aria-live="polite">Choose a code below or paste an ADB result.</p>
+        </form>
+      </div>
+    </section>
+
+    <section class="results wrap" id="results" aria-labelledby="results-title">
+      <div class="section-heading"><div><p class="section-kicker">02 / Diagnose</p><h2 id="results-title">Common installation results</h2></div><p>Exact code meanings can vary with Android version and the complete diagnostic message. Use these as starting points, not a guaranteed fix.</p></div>
+      <div class="result-grid" id="result-grid">
+        <article class="result-card" id="update-incompatible" data-code="INSTALL_FAILED_UPDATE_INCOMPATIBLE" data-keywords="signature signer certificate update conflict package">
+          <div class="card-top"><span class="card-index">01</span><span class="pill pill-amber">Protect existing data</span></div>
+          <h3>Existing app and new APK do not match</h3><code>INSTALL_FAILED_UPDATE_INCOMPATIBLE</code>
+          <p>Android can return this when an installed package with the same name has a different signing certificate. The file may be from another release channel or an unexpected source.</p>
+          <ol><li>Confirm the package name and the source of both builds.</li><li>Compare the signing certificates with <code>apksigner verify --print-certs app.apk</code> where available.</li><li>Back up local app data before considering any uninstall. Do not remove the old app merely to force the new file through.</li></ol>
+          <a href="https://developer.android.com/studio/publish/app-signing" target="_blank" rel="noopener noreferrer">Android app-signing documentation <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="result-card" id="no-matching-abis" data-code="INSTALL_FAILED_NO_MATCHING_ABIS" data-keywords="abi architecture arm64 x86 native libraries cpu">
+          <div class="card-top"><span class="card-index">02</span><span class="pill">Check compatibility</span></div>
+          <h3>APK libraries do not match the device</h3><code>INSTALL_FAILED_NO_MATCHING_ABIS</code>
+          <p>The APK's native libraries may not include an architecture supported by this device. This is a compatibility issue, not evidence that the APK is safe or unsafe.</p>
+          <ol><li>Check the device ABI with <code>adb shell getprop ro.product.cpu.abilist</code>.</li><li>Check which ABI the APK release provides; choose the publisher's matching build.</li><li>Do not install a random “universal” repack from an unrelated site.</li></ol>
+          <a href="https://developer.android.com/games/optimize/64-bit" target="_blank" rel="noopener noreferrer">Android 64-bit compatibility guide <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="result-card" id="older-sdk" data-code="INSTALL_FAILED_OLDER_SDK" data-keywords="minimum sdk android version incompatible system old device">
+          <div class="card-top"><span class="card-index">03</span><span class="pill">Check requirements</span></div>
+          <h3>Device Android version is too old</h3><code>INSTALL_FAILED_OLDER_SDK</code>
+          <p>The package requires a higher minimum Android version than the device provides. An older app version might exist, but only use a trustworthy, clearly identified release.</p>
+          <ol><li>Record the device Android version and APK minimum SDK.</li><li>Check the publisher's compatibility information.</li><li>Avoid changing package metadata or downloading altered APKs just to bypass the requirement.</li></ol>
+          <a href="https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/core/java/android/content/pm/PackageManager.java" target="_blank" rel="noopener noreferrer">Android package-manager source <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="result-card" id="storage" data-code="INSTALL_FAILED_INSUFFICIENT_STORAGE" data-keywords="space storage disk full download cache">
+          <div class="card-top"><span class="card-index">04</span><span class="pill">Check free space</span></div>
+          <h3>Not enough installation space</h3><code>INSTALL_FAILED_INSUFFICIENT_STORAGE</code>
+          <p>Installation can need more free space than the APK's download size because Android has to stage and unpack files.</p>
+          <ol><li>Check available device storage in Settings.</li><li>Remove unneeded downloads or other disposable files—not app data you want to keep.</li><li>Retry only after confirming there is sufficient space; if it still fails, read the complete ADB output.</li></ol>
+          <a href="https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/core/java/android/content/pm/PackageManager.java" target="_blank" rel="noopener noreferrer">Android package-manager source <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="result-card" id="version-downgrade" data-code="INSTALL_FAILED_VERSION_DOWNGRADE" data-keywords="downgrade version old release newer app">
+          <div class="card-top"><span class="card-index">05</span><span class="pill pill-amber">Protect existing data</span></div>
+          <h3>New file has a lower version code</h3><code>INSTALL_FAILED_VERSION_DOWNGRADE</code>
+          <p>The APK may be older than the installed build. A lower version number in a filename does not necessarily tell the whole story; compare Android's version codes and release provenance.</p>
+          <ol><li>Confirm the version code of the installed app and the APK.</li><li>Ask why an older build is needed and whether the publisher supports it.</li><li>Back up data before any uninstall or downgrade experiment. Do not treat a forced downgrade as a routine fix.</li></ol>
+          <a href="https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/core/java/android/content/pm/PackageManager.java" target="_blank" rel="noopener noreferrer">Android package-manager source <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="result-card" id="deprecated-sdk" data-code="INSTALL_FAILED_DEPRECATED_SDK_VERSION" data-keywords="deprecated target sdk blocked android 14 android 15 old app privacy">
+          <div class="card-top"><span class="card-index">06</span><span class="pill pill-red">Security restriction</span></div>
+          <h3>App targets an obsolete Android API</h3><code>INSTALL_FAILED_DEPRECATED_SDK_VERSION</code>
+          <p>Newer Android versions may block installation of apps built for much older target SDKs. This restriction protects users from applications that do not adopt newer privacy and security behavior.</p>
+          <ol><li>Check the exact Android warning and the app's target SDK.</li><li>Look for a current, maintained release from a trustworthy source.</li><li>Do not bypass the low-target-SDK block simply to install an unverified APK.</li></ol>
+          <a href="https://developer.android.com/about/versions/15/behavior-changes-all" target="_blank" rel="noopener noreferrer">Android 15 behavior changes <span aria-hidden="true">↗</span></a>
+        </article>
+      </div>
+      <div id="no-results" class="no-results" hidden><h3>No listed code matched</h3><p>Keep the complete error message. First confirm that ADB sees the intended device, the APK came from a trusted source, and no Play Protect warning identifies a threat. Search the exact code in Android's documentation rather than guessing from a partial message.</p><a href="https://developer.android.com/tools/adb" target="_blank" rel="noopener noreferrer">Read the official ADB guide <span aria-hidden="true">↗</span></a></div>
+    </section>
+
+    <section class="method-section">
+      <div class="wrap method-layout">
+        <div><p class="section-kicker">03 / Before any reset</p><h2>Capture the evidence. Then decide.</h2><p>A failed install and a Play Protect threat warning are not the same event. This decoder only interprets selected ADB package-install failures; it does not assess malware or verify a download. Keep Play Protect enabled, preserve playlists and other app data, and compare the APK against a trusted release before changing an installed package.</p><p>For a product-specific walkthrough, the <a href="https://ymusic.click/how-to-install-ymusic/">YMusic installation guide</a> explains the Android install path and checks to make before opening its APK. This is an example—not a blanket assurance that any APK is safe.</p></div>
+        <aside class="checklist" aria-labelledby="checklist-title"><h3 id="checklist-title">Five details worth saving</h3><ul><li>The exact <code>INSTALL_FAILED_*</code> message</li><li>Android version and device model</li><li>APK source, version, and file name</li><li>Installed app's package and version</li><li>Any Play Protect warning, quoted exactly</li></ul><button class="button button-outline" type="button" id="copy-checklist">Copy checklist</button><span id="copy-status" class="sr-only" role="status" aria-live="polite"></span></aside>
+      </div>
+    </section>
+
+    <section class="sources wrap" aria-labelledby="sources-title"><p class="section-kicker">Sources &amp; scope</p><h2 id="sources-title">How to use this reference</h2><p>Descriptions are based on Android developer documentation and Android Open Source Project package-manager definitions, linked from each result. Error codes can have additional context in the full ADB output and vary by OS version. This tool runs entirely in your browser; it does not accept APK files, send pasted text to a server, diagnose malware, or promise that a file is safe. Last content review: 9 October 2026.</p></section>
+  </main>
+  <footer class="site-footer"><div class="wrap"><span>APK / DIAGNOSTICS</span><span>Independent troubleshooting reference · No affiliation with Google or the Android project.</span></div></footer>
+</body>
+</html>
